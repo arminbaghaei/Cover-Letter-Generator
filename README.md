@@ -21,5 +21,5 @@ Hosted on **[ResearchMate.org](https://www.researchmate.org)** and developed by 
 ## 📦 Installation
 
 ```bash
-pip install streamlit python-docx fpdf
+pip install streamlit python-docx
 streamlit run cover_letter_app.py
