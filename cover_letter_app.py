@@ -1,3 +1,5 @@
+st.set_page_config(page_title="Cover Letter Generator", layout="centered")
+
 import streamlit as st
 from datetime import date
 from docx import Document
@@ -5,7 +7,6 @@ from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 # ✅ THIS MUST COME BEFORE ANY OTHER st.* COMMAND
-st.set_page_config(page_title="Cover Letter Generator", layout="centered")
 
 # 🔷 Logo and Branding
 st.image("ResearchMate1.png", width=180)
