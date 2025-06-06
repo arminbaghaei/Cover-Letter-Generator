@@ -10,14 +10,13 @@ Hosted on **[ResearchMate.org](https://www.researchmate.org)** and developed by 
 - Enter manuscript title, aim, novelty
 - Select paper type (Original Research, Review, etc.)
 - Automatically generates a polished cover letter
-- Download the letter in Microsoft Word format (.docx) or PDF
+- Download the letter in Microsoft Word format (.docx)
 - Optional upload for a signature and institutional logo
 
 ## 🧪 Built With
 
 - [Streamlit](https://streamlit.io/)
 - [python-docx](https://python-docx.readthedocs.io/)
-- [fpdf](https://py-pdf.github.io/fpdf2/)
 
 ## 📦 Installation
 
