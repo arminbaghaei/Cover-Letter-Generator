@@ -91,3 +91,7 @@ if st.button("Generate Cover Letter"):
     with open("cover_letter.docx", "rb") as f:
         st.success("✅ Cover Letter Generated")
         st.download_button("📥 Download as Word (DOCX)", f, file_name="cover_letter.docx")
+
+st.markdown("[📄 View README](https://github.com/your-username/your-repo/blob/main/README.md)")
+st.markdown("[📜 View License (MIT)](https://github.com/your-username/your-repo/blob/main/LICENSE)")
+
