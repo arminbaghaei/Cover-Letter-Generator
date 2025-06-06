@@ -92,6 +92,6 @@ if st.button("Generate Cover Letter"):
         st.success("✅ Cover Letter Generated")
         st.download_button("📥 Download as Word (DOCX)", f, file_name="cover_letter.docx")
 
-st.markdown("[📄 View README](https://github.com/Cover-Letter-Generator/blob/main/README.md)")
-st.markdown("[📜 View License (MIT)](https://github.com/Cover-Letter-Generator/blob/main/LICENSE)")
+st.markdown("[📄 View README](https://github.com/arminbaghaei/Cover-Letter-Generator/blob/main/README.md)")
+st.markdown("[📜 View License (MIT)](https://github.com/arminbaghaei/Cover-Letter-Generator/blob/main/LICENSE)")
 
