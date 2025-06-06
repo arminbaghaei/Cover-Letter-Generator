@@ -76,3 +76,4 @@ pdf_path = generate_pdf(
 )
 
 pdf_path
+from fpdf import FPDF
