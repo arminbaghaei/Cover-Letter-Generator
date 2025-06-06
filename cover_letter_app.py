@@ -1,93 +1,78 @@
-import streamlit as st
+from fpdf import FPDF
 from datetime import date
-from docx import Document
-from docx.shared import Pt, Inches
-from docx.enum.text import WD_ALIGN_PARAGRAPH
 
-# ✅ Must be the first Streamlit command
-st.set_page_config(page_title="Cover Letter Generator", layout="centered")
+class PDF(FPDF):
+    def header(self):
+        if self.logo_path:
+            self.image(self.logo_path, 10, 8, 33)
+            self.set_y(45)
 
-# 🔷 Logo and Branding
-st.image("ResearchMate1.png", width=200)
-st.markdown("### Developed by **Abdollah Baghaei** – [ResearchMate.org](https://www.researchmate.org)")
-st.markdown("---")
+    def __init__(self, logo_path=None):
+        super().__init__()
+        self.logo_path = logo_path
 
-def generate_docx(name, email, affiliation, title, author, journal, submission_date, paper_type, paper_aim, novelty, signature_path=None):
-    doc = Document()
-    style = doc.styles['Normal']
-    font = style.font
-    font.name = 'Times New Roman'
-    font.size = Pt(12)
+def generate_pdf(name, email, affiliation, title, author, journal, submission_date, paper_type, paper_aim, novelty, signature_path=None, logo_path=None):
+    pdf = PDF(logo_path)
+    pdf.add_page()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.set_font("Times", size=12)
 
-    # Add author header
-    doc.add_paragraph(name)
-    doc.add_paragraph(email)
-    doc.add_paragraph(affiliation)
-    doc.add_paragraph("")
+    # Normalize apostrophes
+    fixed_novelty = novelty.replace("’", "'")
+    fixed_aim = paper_aim.replace("’", "'")
+    fixed_journal = journal.replace("’", "'")
 
-    # Main letter body
-    doc.add_paragraph('Dear Editor,')
+    # Header
+    pdf.cell(200, 10, txt=name, ln=True)
+    pdf.cell(200, 10, txt=email, ln=True)
+    pdf.cell(200, 10, txt=affiliation, ln=True)
+    pdf.ln(10)
 
-    para1 = doc.add_paragraph()
-    para1.add_run(f'I am pleased to submit our manuscript entitled "{title}" for consideration in ').bold = False
-    para1.add_run(journal).italic = True
-    para1.add_run(f' as a {paper_type}. This paper is authored by {author} and addresses the following main aim: {paper_aim}')
-    para1.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    # Letter
+    pdf.multi_cell(0, 10, "Dear Editor,", align="L")
+    pdf.multi_cell(0, 10,
+        f'I am pleased to submit our manuscript entitled "{title}" for consideration in {fixed_journal} as a {paper_type}. '
+        f'This paper is authored by {author} and addresses the following main aim: {fixed_aim}.', align="L")
 
-    para2 = doc.add_paragraph()
-    para2.add_run("The novelty of our work lies in: ").bold = True
-    para2.add_run(novelty)
-    para2.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    pdf.ln(5)
+    pdf.multi_cell(0, 10, f"The novelty of our work lies in: {fixed_novelty}", align="L")
 
-    para3 = doc.add_paragraph()
-    para3.add_run("We believe this work will be of interest to the readership of ").bold = False
-    para3.add_run(journal).italic = True
-    para3.add_run(" and aligns well with the journal’s scope. We confirm that this manuscript has not been published elsewhere and is not under consideration by any other journal.")
-    para3.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    pdf.ln(5)
+    pdf.multi_cell(0, 10,
+        f"We believe this work will be of interest to the readership of {fixed_journal} and aligns well with the journal's scope. "
+        f"We confirm that this manuscript has not been published elsewhere and is not under consideration by any other journal.",
+        align="L")
 
-    doc.add_paragraph("Thank you for considering our submission. We look forward to your positive response.")
-    doc.add_paragraph("Sincerely,")
+    pdf.ln(5)
+    pdf.multi_cell(0, 10, "Thank you for considering our submission. We look forward to your positive response.\n\nSincerely,", align="L")
 
-    # Signature (if provided)
+    # Signature
     if signature_path:
-        doc.add_picture(signature_path, width=Inches(1.5))
+        pdf.image(signature_path, x=10, w=40)
+        pdf.ln(20)
 
-    doc.add_paragraph(author)
-    doc.add_paragraph(submission_date.strftime("%B %d, %Y"))
+    pdf.cell(200, 10, txt=author, ln=True)
+    pdf.cell(200, 10, txt=submission_date.strftime("%B %d, %Y"), ln=True)
 
-    return doc
+    # Save PDF
+    pdf_path = "/mnt/data/cover_letter_generated.pdf"
+    pdf.output(pdf_path)
+    return pdf_path
 
-# Main UI
-st.title("📄 Manuscript Cover Letter Generator")
-st.write("Fill in the details below to generate a professional manuscript cover letter.")
+# Example call (logo/signature optional)
+pdf_path = generate_pdf(
+    name="Dr. Armin Baghaei",
+    email="armin@example.com",
+    affiliation="Tech Innovation Experts Group",
+    title="A Novel Approach to Sustainable Materials",
+    author="Dr. Armin Baghaei",
+    journal="Journal of Eco Building",
+    submission_date=date.today(),
+    paper_type="Original Research",
+    paper_aim="to assess the lifecycle carbon footprint of novel biocomposites in residential housing",
+    novelty="the integration of waste-derived composites with enhanced thermal insulation capacity",
+    signature_path=None,
+    logo_path=None
+)
 
-# Author Info
-name = st.text_input("Author's Full Name")
-email = st.text_input("Email Address")
-affiliation = st.text_input("Affiliation")
-
-# Manuscript Info
-title = st.text_input("Manuscript Title")
-author = st.text_input("Corresponding Author Name")
-journal = st.text_input("Journal Name")
-submission_date = st.date_input("Submission Date", value=date.today())
-paper_type = st.selectbox("Paper Type", ["Original Research", "Review", "Short Communication", "Case Study"])
-paper_aim = st.text_area("Main Aim or Objective of the Paper")
-novelty = st.text_area("Novelty or Key Contribution")
-
-# Signature Image Upload
-signature_image = st.file_uploader("Upload your signature image (PNG or JPG, optional)", type=["png", "jpg", "jpeg"])
-
-if st.button("Generate Cover Letter"):
-    signature_path = None
-    if signature_image:
-        signature_path = f"temp_signature.{signature_image.name.split('.')[-1]}"
-        with open(signature_path, "wb") as f:
-            f.write(signature_image.read())
-
-    doc = generate_docx(name, email, affiliation, title, author, journal, submission_date, paper_type, paper_aim, novelty, signature_path)
-    doc.save("cover_letter.docx")
-
-    with open("cover_letter.docx", "rb") as f:
-        st.success("✅ Cover Letter Generated")
-        st.download_button("📥 Download as Word (DOCX)", f, file_name="cover_letter.docx")
+pdf_path
