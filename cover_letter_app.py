@@ -1,5 +1,4 @@
 st.set_page_config(page_title="Cover Letter Generator", layout="centered")
-
 # 🔷 Logo and Branding
 st.image("ResearchMate1.png", width=180)
 st.markdown("### Developed by **Abdollah Baghaei Daemei** – [ResearchMate.org](https://www.researchmate.org)")
