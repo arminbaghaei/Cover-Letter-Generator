@@ -3,12 +3,15 @@ from datetime import date
 from docx import Document
 from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+
+# ✅ THIS MUST COME BEFORE ANY OTHER st.* COMMAND
 st.set_page_config(page_title="Cover Letter Generator", layout="centered")
 
 # 🔷 Logo and Branding
 st.image("ResearchMate1.png", width=180)
 st.markdown("### Developed by **Abdollah Baghaei Daemei** – [ResearchMate.org](https://www.researchmate.org)")
 st.markdown("---")
+
 
 def generate_docx(name, email, affiliation, title, author, journal, submission_date, paper_type, paper_aim, novelty, signature_path=None):
     doc = Document()
