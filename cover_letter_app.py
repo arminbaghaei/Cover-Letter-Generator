@@ -1,10 +1,10 @@
 import streamlit as st
 from datetime import date
 from docx import Document
-from docx.shared import Pt
+from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
-def generate_docx(name, email, affiliation, title, author, journal, submission_date, paper_type, paper_aim, novelty):
+def generate_docx(name, email, affiliation, title, author, journal, submission_date, paper_type, paper_aim, novelty, signature_path=None):
     doc = Document()
     style = doc.styles['Normal']
     font = style.font
@@ -39,6 +39,11 @@ def generate_docx(name, email, affiliation, title, author, journal, submission_d
 
     doc.add_paragraph("Thank you for considering our submission. We look forward to your positive response.")
     doc.add_paragraph("Sincerely,")
+
+    # Signature (if provided)
+    if signature_path:
+        doc.add_picture(signature_path, width=Inches(1.5))
+
     doc.add_paragraph(author)
     doc.add_paragraph(submission_date.strftime("%B %d, %Y"))
 
@@ -64,12 +69,19 @@ paper_type = st.selectbox("Paper Type", ["Original Research", "Review", "Short C
 paper_aim = st.text_area("Main Aim or Objective of the Paper")
 novelty = st.text_area("Novelty or Key Contribution")
 
-# Optional Upload
-st.file_uploader("Upload your manuscript (optional)", type=["docx", "pdf"])
+# Signature Image Upload
+signature_image = st.file_uploader("Upload your signature image (PNG or JPG, optional)", type=["png", "jpg", "jpeg"])
 
 if st.button("Generate Cover Letter"):
-    doc = generate_docx(name, email, affiliation, title, author, journal, submission_date, paper_type, paper_aim, novelty)
+    signature_path = None
+    if signature_image:
+        signature_path = f"temp_signature.{signature_image.name.split('.')[-1]}"
+        with open(signature_path, "wb") as f:
+            f.write(signature_image.read())
+
+    doc = generate_docx(name, email, affiliation, title, author, journal, submission_date, paper_type, paper_aim, novelty, signature_path)
     doc.save("cover_letter.docx")
+
     with open("cover_letter.docx", "rb") as f:
         st.success("✅ Cover Letter Generated")
         st.download_button("📥 Download as Word (DOCX)", f, file_name="cover_letter.docx")
